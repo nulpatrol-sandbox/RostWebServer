@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <File name="console" filename="log/console.log">
+            <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" />
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+        </File>
+        <File name="rostWebServer" filename="log/rostWebServer.log">
+            <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} - %msg%n" />
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="rostWebServer" />
+            <AppenderRef ref="console" />
+        </Root>
+    </Loggers>
+</Configuration>

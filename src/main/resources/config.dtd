@@ -1,0 +1,14 @@
+<!ELEMENT Configuration (Port, WebDocRoot, TmpDir, IndexFiles, ContentTypes, Handlers)*>
+<!ELEMENT Port (#PCDATA)>
+<!ELEMENT WebDocRoot (#PCDATA)>
+<!ELEMENT TmpDir (#PCDATA)>
+<!ELEMENT IndexFiles (Index)*>
+<!ELEMENT Index (#PCDATA)>
+
+<!ELEMENT ContentTypes (Type)*>
+<!ELEMENT Type (#PCDATA)>
+<!ATTLIST Type ext CDATA #IMPLIED>
+
+<!ELEMENT Handlers (Handler)*>
+<!ELEMENT Handler (#PCDATA)>
+<!ATTLIST Handler ext CDATA #REQUIRED>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration SYSTEM "config.dtd">
+<Configuration>
+    <Port>80</Port>
+    <WebDocRoot>www/</WebDocRoot>
+    <TmpDir>tmp</TmpDir>
+    <IndexFiles>
+        <Index>index.html</Index>
+        <Index>index.htm</Index>
+        <Index>index.php</Index>
+    </IndexFiles>
+    <ContentTypes>
+        <Type ext="html,htm">text/html</Type>
+        <Type ext="php">text/html</Type>
+        <Type ext="css">text/css</Type>
+        <Type ext="xml">text/xml</Type>
+        <Type ext="json">application/json</Type>
+        <Type ext="js">application/javascript</Type>
+        <Type ext="pdf">application/pdf</Type>
+        <Type ext="zip">application/zip</Type>
+        <Type>application/x-www-form-urlencoded</Type>
+        <Type ext="gif">image/gif</Type>
+        <Type ext="jpeg,jpg">image/jpeg</Type>
+        <Type ext="png">image/png</Type>
+        <Type>multipart/form-data</Type>
+    </ContentTypes>
+    <Handlers>
+        <Handler ext="php">cgi-app/php/php-cgi.exe</Handler>
+    </Handlers>
+</Configuration>
