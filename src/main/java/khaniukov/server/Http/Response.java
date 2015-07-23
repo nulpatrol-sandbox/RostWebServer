@@ -2,14 +2,18 @@ package khaniukov.server.Http;
 
 import khaniukov.server.App;
 import khaniukov.server.Config;
+import org.apache.logging.log4j.core.util.Charsets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,11 +45,20 @@ public class Response {
         stateText = returnText.get(returnCode);
         if (returnCode == 404) {
             try {
-                this.body = Files.readAllBytes(Paths.get(this.getClass().getResource("/default_pages/404.html").toURI()));
+                URL url = this.getClass().getResource("/default_pages/404.html");
+                if (url == null) throw new NoSuchFileException("Cannot find /default_pages/404.html");
+                this.body = Files.readAllBytes(Paths.get(url.toURI()));
+            } catch (NoSuchFileException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                App.errorLogger.error(sw.toString());
             } catch (IOException e) {
-                App.errorLogger.error("[I/O error]: Cannot find /default_pages/404.html");
+                /* Do nothing 2 */
             } catch (URISyntaxException e) {
+                System.out.println(e.getClass().getSimpleName());
                 /* Do nothing */
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -86,12 +99,12 @@ public class Response {
         if (type.equals("text/html")) {
             String b = "";
             try {
-                b = new String(body, "UTF-8");
+                b = new String(body, Charsets.UTF_8);
                 b = makeFileInsertion(b);
             } catch (Exception e) {
                 /**/
             }
-            this.body = b.getBytes();
+            this.body = b.getBytes(Charsets.UTF_8);
         }
         this.fromCGI = fromCGI;
         setHeader("Content-type", type);
@@ -141,11 +154,11 @@ public class Response {
         }
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        output.write(answer.toString().getBytes());
+        output.write(answer.toString().getBytes(Charsets.UTF_8));
         if (body != null) {
             output.write(body);
         } else {
-            output.write(EOLN.getBytes());
+            output.write(EOLN.getBytes(Charsets.UTF_8));
         }
         return output.toByteArray();
     }
