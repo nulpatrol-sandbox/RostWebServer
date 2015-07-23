@@ -3,6 +3,7 @@ package khaniukov.server.Http;
 import khaniukov.server.App;
 import khaniukov.server.QueryString;
 import khaniukov.server.WebServer.HttpMethods;
+import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class Request {
             parseStartString();
             readHeaders();
         } catch (IOException e) {
-            System.out.println("[I/O Error in Request.Request]" + e.getMessage());
+            System.out.println("[I/O Error in Request.Request()]: " + e.getMessage());
         }
     }
 
@@ -118,7 +119,7 @@ public class Request {
             }
             path = startLine.substring(start + 2, end);
         } catch (Exception e) {
-            System.out.println("[I/O Error in Request.parseStartString] " + e.getMessage());
+            System.out.println("[I/O Error in Request.parseStartString()]: " + e.getMessage());
         }
     }
 
