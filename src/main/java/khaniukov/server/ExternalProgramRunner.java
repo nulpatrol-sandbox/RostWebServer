@@ -1,6 +1,6 @@
 package khaniukov.server;
 
-import com.sun.media.jfxmedia.track.Track;
+import org.apache.logging.log4j.core.util.Charsets;
 
 import java.io.*;
 
@@ -61,8 +61,6 @@ public class ExternalProgramRunner {
         setEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
         setEnvironmentVariable("CONTENT_LENGTH",    queryString.getLength());
         setEnvironmentVariable("CONTENT_TYPE",      "application/x-www-form-urlencoded");
-        setEnvironmentVariable("REMOTE_ADDR",       "");
-        setEnvironmentVariable("REMOTE_PORT", "");
 
         Process process = pb.start();
         DataOutputStream writer = new DataOutputStream(process.getOutputStream());
@@ -74,7 +72,7 @@ public class ExternalProgramRunner {
         StringBuilder sb = new StringBuilder();
         String line;
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(tmp.getAbsoluteFile()), "UTF-8"))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(tmp.getAbsoluteFile()), Charsets.UTF_8))) {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append(System.getProperty("line.separator"));
@@ -82,6 +80,6 @@ public class ExternalProgramRunner {
         }
 
         //tmp.delete();
-        return sb.toString().getBytes();
+        return sb.toString().getBytes(Charsets.UTF_8);
     }
 }

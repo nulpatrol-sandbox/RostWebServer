@@ -17,8 +17,8 @@ import java.net.Socket;
 public class App {
 
     public static final String FRAME_TITLE        = "RostWebServer";
-    public static final Logger errorLogger = LogManager.getLogger(WebServer.class);
-    public static final Logger requestLogger = LogManager.getLogger("Request");
+    public static final Logger errorLogger   = LogManager.getLogger("console");
+    public static final Logger requestLogger = LogManager.getLogger("requests");
 
     /**
      * Main application method
