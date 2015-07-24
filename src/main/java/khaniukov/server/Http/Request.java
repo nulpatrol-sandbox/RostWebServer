@@ -2,6 +2,7 @@ package khaniukov.server.Http;
 
 import khaniukov.server.App;
 import khaniukov.server.QueryString;
+import khaniukov.server.Utils;
 import khaniukov.server.WebServer.HttpMethods;
 import org.apache.logging.log4j.Level;
 
@@ -36,7 +37,7 @@ public class Request {
             parseStartString();
             readHeaders();
         } catch (IOException e) {
-            System.out.println("[I/O Error in Request.Request()]: " + e.getMessage());
+            Utils.logStackTrace(e);
         }
     }
 
@@ -119,7 +120,7 @@ public class Request {
             }
             path = startLine.substring(start + 2, end);
         } catch (Exception e) {
-            System.out.println("[I/O Error in Request.parseStartString()]: " + e.getMessage());
+            Utils.logStackTrace(e);
         }
     }
 
@@ -149,7 +150,7 @@ public class Request {
      * @throws IOException
      */
     public String process() throws IOException {
-        App.requestLogger.info(getRemoteAddress() + ":" + getRemotePort() + " - " + this.startLine);
+        App.requestLogger.info(getRemoteAddress() + ":" + getRemotePort() + " " + this.startLine);
         int length = 0;
         if (headers.get("Content-Length") != null) {
             length = Integer.parseInt(headers.get("Content-Length"));
@@ -164,6 +165,7 @@ public class Request {
                     break;
             }
         }
+
         switch (method) {
             case GET:
                 if (path.contains("?")) {

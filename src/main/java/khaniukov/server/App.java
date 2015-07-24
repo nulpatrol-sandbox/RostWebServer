@@ -32,6 +32,7 @@ public class App {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setSize(600, 400);
+        frame.setLocation(200, 200);
         UIManager.put("TextArea.margin", new Insets(10, 10, 10, 10));
         JTextArea area = new JTextArea();
         area.append("[OK] RostWebServer initialised" + System.getProperty("line.separator"));
@@ -81,7 +82,7 @@ public class App {
             servers = new ServerSocket(Config.getIntParam("Port"));
             while (true) {
                 client = servers.accept();
-                new WebServer(client).start();
+                new WebServer(client).run();
             }
         } catch (IOException e) {
             errorLogger.error("[I/O error]" + e.getMessage());

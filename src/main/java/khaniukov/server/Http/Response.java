@@ -2,6 +2,7 @@ package khaniukov.server.Http;
 
 import khaniukov.server.App;
 import khaniukov.server.Config;
+import khaniukov.server.Utils;
 import org.apache.logging.log4j.core.util.Charsets;
 
 import java.io.ByteArrayOutputStream;
@@ -48,17 +49,8 @@ public class Response {
                 URL url = this.getClass().getResource("/default_pages/404.html");
                 if (url == null) throw new NoSuchFileException("Cannot find /default_pages/404.html");
                 this.body = Files.readAllBytes(Paths.get(url.toURI()));
-            } catch (NoSuchFileException e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                App.errorLogger.error(sw.toString());
-            } catch (IOException e) {
-                /* Do nothing 2 */
-            } catch (URISyntaxException e) {
-                System.out.println(e.getClass().getSimpleName());
-                /* Do nothing */
             } catch (Exception e) {
-                e.printStackTrace();
+                Utils.logStackTrace(e);
             }
         }
     }
@@ -102,7 +94,7 @@ public class Response {
                 b = new String(body, Charsets.UTF_8);
                 b = makeFileInsertion(b);
             } catch (Exception e) {
-                /**/
+                Utils.logStackTrace(e);
             }
             this.body = b.getBytes(Charsets.UTF_8);
         }

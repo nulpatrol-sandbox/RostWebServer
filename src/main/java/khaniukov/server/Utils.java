@@ -2,6 +2,8 @@ package khaniukov.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -56,5 +58,11 @@ public final class Utils {
                 }
             }
         }
+    }
+
+    public static void logStackTrace(Throwable e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        App.errorLogger.error(sw.toString());
     }
 }

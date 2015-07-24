@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Rostislav Khaniukov
  */
-public class WebServer extends Thread {
+public class WebServer implements Runnable {
     /**
      * Enumeration which consist of all supported methods
      */
@@ -44,7 +44,7 @@ public class WebServer extends Thread {
         try {
             httpQueryHandler(in, out);
         } catch (IOException e) {
-            App.errorLogger.error("[I/O Error]: " + e.getMessage());
+            Utils.logStackTrace(e);
             System.exit(-1);
         } finally {
             try {
@@ -52,7 +52,7 @@ public class WebServer extends Thread {
                 in.close();
                 client.close();
             } catch (IOException e) {
-                App.errorLogger.error("[I/O Error]: " + e.getMessage());
+                Utils.logStackTrace(e);
                 System.exit(-1);
             }
         }
@@ -71,12 +71,12 @@ public class WebServer extends Thread {
                 output.write(
                     new Response(200).setBody(cgi.setEnvironmentVariable("REMOTE_ADDR", request.getRemoteAddress())
                                                      .setEnvironmentVariable("REMOTE_PORT", request.getRemotePort())
-                                                     .run(request.getQueryString()),
+                                                     .run(request.getMethod(), request.getQueryString()),
                                                   contentType, true)
                                          .toByteArray()
                 );
             } catch (Exception e) {
-                App.errorLogger.error("[InterruptedException]: " + e.getMessage());
+                Utils.logStackTrace(e);
                 System.exit(-1);
             }
         } else {
@@ -87,7 +87,7 @@ public class WebServer extends Thread {
                 );
             } catch (Exception e)
             {
-                e.printStackTrace();
+                Utils.logStackTrace(e);
             }
         }
     }

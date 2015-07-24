@@ -27,7 +27,7 @@ public class ExternalProgramRunner {
             // Create temp file in temporary directory
             tmp = File.createTempFile("cgi_", ".tmp", new File(Config.getStringParam("TmpDir")));
         } catch (IOException e) {
-            App.errorLogger.error("[I/O Error]: Cannot create a temp file for redirecting external program output");
+            Utils.logStackTrace(e);
         }
 
         pb = new ProcessBuilder(pathToProgram, file.getAbsolutePath());
@@ -54,19 +54,25 @@ public class ExternalProgramRunner {
      * @throws IOException
      * @throws InterruptedException
      */
-    public byte[] run(QueryString queryString) throws IOException, InterruptedException {
-        setEnvironmentVariable("REDIRECT_STATUS",   "true");
+    public byte[] run(WebServer.HttpMethods method, QueryString queryString) throws IOException, InterruptedException {
+        setEnvironmentVariable("REDIRECT_STATUS", "true");
+        setEnvironmentVariable("REQUEST_METHOD",    method.toString());
         setEnvironmentVariable("SCRIPT_FILENAME",   file.getPath());
-        setEnvironmentVariable("REQUEST_METHOD",    "POST");
         setEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
         setEnvironmentVariable("CONTENT_LENGTH",    queryString.getLength());
         setEnvironmentVariable("CONTENT_TYPE",      "application/x-www-form-urlencoded");
 
+        if (method == WebServer.HttpMethods.GET) {
+            setEnvironmentVariable("QUERY_STRING", queryString.toString());
+        }
+
         Process process = pb.start();
+
         DataOutputStream writer = new DataOutputStream(process.getOutputStream());
         writer.writeBytes(queryString.toString());
         writer.flush();
         writer.close();
+
         process.waitFor();
 
         StringBuilder sb = new StringBuilder();

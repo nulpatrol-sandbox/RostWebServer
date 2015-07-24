@@ -6,8 +6,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -37,10 +40,8 @@ public final class Config {
         Document xml = null;
         try {
             xml = builder.build(new File(configPath));
-        } catch (JDOMException e) {
-            App.errorLogger.error("[JDOM error]: " + e.getMessage());
-        } catch (IOException e) {
-            App.errorLogger.error("[I/O error]: " + e.getMessage());
+        } catch (Exception e) {
+            Utils.logStackTrace(e);
         }
 
         if (xml != null)
@@ -64,7 +65,13 @@ public final class Config {
      * @return parameter value as integer
      */
     public static int getIntParam(String name) {
-        return Integer.parseInt(getStringParam(name));
+        int param = 0;
+        try {
+            param = Integer.parseInt(getStringParam(name));
+        } catch (NumberFormatException e) {
+            Utils.logStackTrace(e);
+        }
+        return param;
     }
 
     /**
