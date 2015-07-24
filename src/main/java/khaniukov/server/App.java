@@ -1,5 +1,7 @@
 package khaniukov.server;
 
+import khaniukov.server.controller.ServerController;
+import khaniukov.server.model.SimpleAppModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,51 +30,8 @@ public class App {
      * Main application method
      */
     public static void main(String[] args) {
-        final JFrame frame = new JFrame(FRAME_TITLE);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setSize(600, 400);
-        frame.setLocation(200, 200);
-        UIManager.put("TextArea.margin", new Insets(10, 10, 10, 10));
-        JTextArea area = new JTextArea();
-        area.append("[OK] RostWebServer initialised" + System.getProperty("line.separator"));
-        area.append("World" + System.getProperty("line.separator"));
-        area.append("World" + System.getProperty("line.separator"));
-
-        area.setEditable(false);
-
-        JScrollPane sp = new JScrollPane(area);
-        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        frame.getContentPane().add(sp);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-
-        frame.addWindowStateListener(new WindowStateListener() {
-            public void windowStateChanged(WindowEvent e) {
-                if (e.getNewState() == WindowEvent.WINDOW_ICONIFIED) {
-                    try {
-                        SystemTray tray = SystemTray.getSystemTray();
-                        Toolkit toolkit = Toolkit.getDefaultToolkit();
-                        Image image = toolkit.getImage("icon.png");
-                        PopupMenu menu = new PopupMenu();
-                        MenuItem closeItem = new MenuItem("Close");
-                        closeItem.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                System.exit(0);
-                            }
-                        });
-                        menu.add(closeItem);
-                        TrayIcon icon = new TrayIcon(image, "SystemTray Demo", menu);
-                        icon.setImageAutoSize(true);
-                        tray.add(icon);
-                        frame.setVisible(false);
-                    } catch (AWTException ex) {
-                        /* */
-                    }
-                }
-            }
-        });
+        ServerController controller = new ServerController(new SimpleAppModel());
+        controller.createView();
 
         ServerSocket servers;
         Socket client;
