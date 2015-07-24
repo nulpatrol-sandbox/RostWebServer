@@ -45,12 +45,5 @@
             <artifactId>jdom</artifactId>
             <version>2.0.2</version>
         </dependency>
-        <dependency>
-            <groupId>snoozesoft.systray4j</groupId>
-            <artifactId>systray4j</artifactId>
-            <version>2.4.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/src/main/resources/systray4j.jar</systemPath>
-        </dependency>
     </dependencies>
 </project>
