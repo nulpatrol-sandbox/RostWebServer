@@ -1,5 +1,7 @@
 package khaniukov.server;
 
+import khaniukov.server.controller.ServerController;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,6 +65,6 @@ public final class Utils {
     public static void logStackTrace(Throwable e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        App.errorLogger.error(sw.toString());
+        ServerController.errorLogger.error(sw.toString());
     }
 }

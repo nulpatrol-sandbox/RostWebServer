@@ -1,11 +1,12 @@
 package khaniukov.server.Http;
 
-import khaniukov.server.App;
 import khaniukov.server.QueryString;
 import khaniukov.server.Utils;
 import khaniukov.server.WebServer.HttpMethods;
-import org.apache.logging.log4j.Level;
+import khaniukov.server.controller.ServerController;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,6 +26,16 @@ public class Request {
     private String remoteIP   = "";
     private String remotePort = "";
     private String startLine  = "";
+    private String requestedResource;
+
+    /**
+     * Method to access method field, which store the HTTP method.
+     *
+     * @return HTTP method of request
+     */
+    public String getRequestedResource() {
+        return requestedResource;
+    }
 
     /**
      * Contructor of Request class
@@ -150,7 +161,9 @@ public class Request {
      * @throws IOException
      */
     public String process() throws IOException {
-        App.requestLogger.info(getRemoteAddress() + ":" + getRemotePort() + " " + this.startLine);
+        requestedResource = getRemoteAddress() + ":" + getRemotePort() + "\n\t" + this.startLine;
+        ServerController.requestLogger.info(requestedResource);
+
         int length = 0;
         if (headers.get("Content-Length") != null) {
             length = Integer.parseInt(headers.get("Content-Length"));

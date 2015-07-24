@@ -1,15 +1,11 @@
 package khaniukov.server.Http;
 
-import khaniukov.server.App;
 import khaniukov.server.Config;
 import khaniukov.server.Utils;
 import org.apache.logging.log4j.core.util.Charsets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;

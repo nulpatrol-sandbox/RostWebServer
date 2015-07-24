@@ -10,7 +10,6 @@ import java.util.*;
 public abstract class SwingAppView implements AppView, Observer {
     protected JFrame   frame;
     protected AppModel model;
-    private ArrayList<ActionListener> listeners = new ArrayList<>();
 
     public SwingAppView(AppModel model) {
         this.model = model;
@@ -48,21 +47,6 @@ public abstract class SwingAppView implements AppView, Observer {
 
     public void update() {
         update(null, null);
-    }
-
-    public void addActionListener(ActionListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeActionListener(ActionListener listener) {
-        listeners.remove(listener);
-    }
-
-    protected void fireAction(String command) {
-        ActionEvent event = new ActionEvent(this, 0, command);
-        for (ActionListener listener : listeners) {
-            listener.actionPerformed(event);
-        }
     }
 
     public void showError(String message) {
