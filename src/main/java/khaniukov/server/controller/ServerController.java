@@ -1,7 +1,8 @@
 package khaniukov.server.controller;
 
+import khaniukov.server.AccessControl.AccessControl;
 import khaniukov.server.Config;
-import khaniukov.server.Http.Request;
+import khaniukov.server.Utils;
 import khaniukov.server.WebServer;
 import khaniukov.server.model.AppModel;
 import khaniukov.server.model.SimpleAppModel;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -37,6 +39,11 @@ public class ServerController implements ActionListener {
             servers = new ServerSocket(Config.getIntParam("Port"));
             while (true) {
                 client = servers.accept();
+                try {
+                    AccessControl.checkAccess(client, new File("www/index.php"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new WebServer(client, controller).run();
             }
         } catch (IOException e) {

@@ -16,7 +16,7 @@ public abstract class SwingAppView implements AppView, Observer {
         model.observable().addObserver(this);
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
         } catch (Exception e) {
             e.printStackTrace();
         }
