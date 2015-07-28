@@ -83,6 +83,8 @@ public class ExternalProgramRunner {
                 sb.append(line);
                 sb.append(System.getProperty("line.separator"));
             }
+        } catch (IOException e) {
+            Utils.logStackTrace(e);
         }
 
         //tmp.delete();

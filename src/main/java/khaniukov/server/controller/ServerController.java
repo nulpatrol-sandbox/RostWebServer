@@ -4,10 +4,8 @@ import khaniukov.server.AccessControl.AccessControl;
 import khaniukov.server.Config;
 import khaniukov.server.Utils;
 import khaniukov.server.WebServer;
-import khaniukov.server.model.AppModel;
-import khaniukov.server.model.SimpleAppModel;
-import khaniukov.server.view.AppView;
-import khaniukov.server.view.SwingTextAreaAppView;
+import khaniukov.server.model.*;
+import khaniukov.server.view.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,9 +17,21 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Main application controller
+ */
 public class ServerController implements ActionListener {
+    /**
+     * Logger for errors
+     */
     public static final Logger errorLogger   = LogManager.getLogger("console");
+    /**
+     * Logger for HTTP-requests
+     */
     public static final Logger requestLogger = LogManager.getLogger("requests");
+    /**
+     * Model for storing HTTP-requests data
+     */
     private AppModel model;
 
     /**
@@ -39,37 +49,37 @@ public class ServerController implements ActionListener {
             servers = new ServerSocket(Config.getIntParam("Port"));
             while (true) {
                 client = servers.accept();
-                try {
-                    AccessControl.checkAccess(client, new File("www/index.php"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 new WebServer(client, controller).run();
             }
         } catch (IOException e) {
-            ServerController.errorLogger.error("[I/O error]" + e.getMessage());
-            System.exit(-1);
+            Utils.logStackTrace(e);
         }
     }
 
+    /**
+     * Constuct ServerController with specified model
+     * @param model model for storing data
+     */
     public ServerController(AppModel model) {
         this.model = model;
     }
 
+    /**
+     * Create view and show it
+     */
     public void createView() {
         AppView view = new SwingTextAreaAppView(model);
         view.show();
     }
 
+    /**
+     * Method for reacting to an event
+     * @param event an event that has occured
+     */
     public void actionPerformed(ActionEvent event) {
         WebServer server = (WebServer)event.getSource();
         if (event.getActionCommand().equals(WebServer.ACTION_UPDATE)) {
-            try {
-                model.setMessage(server.getRequestedResource());
-            }
-            catch (Exception e) {
-                /*  */
-            }
+            model.setMessage(server.getRequestedResource());
         }
     }
 }

@@ -5,8 +5,6 @@ import khaniukov.server.Utils;
 import khaniukov.server.WebServer.HttpMethods;
 import khaniukov.server.controller.ServerController;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,16 +27,7 @@ public class Request {
     private String requestedResource;
 
     /**
-     * Method to access method field, which store the HTTP method.
-     *
-     * @return HTTP method of request
-     */
-    public String getRequestedResource() {
-        return requestedResource;
-    }
-
-    /**
-     * Contructor of Request class
+     * Contruct Request class
      *
      * @param input BufferedReader instance for reading HTTP Request from it.
      */
@@ -50,6 +39,15 @@ public class Request {
         } catch (IOException e) {
             Utils.logStackTrace(e);
         }
+    }
+
+    /**
+     * Method to access method field, which store the HTTP method.
+     *
+     * @return HTTP method of request
+     */
+    public String getRequestedResource() {
+        return requestedResource;
     }
 
     /**
@@ -186,12 +184,13 @@ public class Request {
                     path = tmp[0];
                     queryString = new QueryString(tmp[1]);
                 }
+                break;
             case POST:
                 if (headers.get("Content-Type") != null &&
                         headers.get("Content-Type").equals("application/x-www-form-urlencoded")) {
-                    String qs = body.toString();
-                    queryString = new QueryString(qs);
+                    queryString = new QueryString(body.toString());
                 }
+                break;
         }
 
         return path;

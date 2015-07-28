@@ -2,15 +2,10 @@ package khaniukov.server;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -37,15 +32,28 @@ public final class Config {
      */
     public static void initialize(String configPath) {
         SAXBuilder builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
-        Document xml = null;
+        Document xml;
+
         try {
             xml = builder.build(new File(configPath));
+            if (xml != null) {
+                configuration = xml.getRootElement();
+            } else {
+                throw new Exception("XML document is null");
+            }
         } catch (Exception e) {
             Utils.logStackTrace(e);
         }
 
-        if (xml != null)
-            configuration = xml.getRootElement();
+    }
+
+    private static Element getParam(String name) {
+        Element child = configuration.getChild(name);
+        if (child != null) {
+            return child;
+        } else {
+            throw new NullPointerException("Cannot find \"" + name + "\" configuration item");
+        }
     }
 
     /**
@@ -55,7 +63,7 @@ public final class Config {
      * @return parameter value as string
      */
     public static String getStringParam(String name) {
-        return configuration.getChild(name).getText();
+        return getParam(name).getText();
     }
 
     /**
@@ -81,10 +89,15 @@ public final class Config {
      * @return parameter value as list
      */
     public static List<String> getListParam(String name) {
-        List<Element> elements = configuration.getChild(name).getChildren();
+        List<Element> elements = getParam(name).getChildren();
         List<String> listValue = new ArrayList<>();
-        for (Element element : elements) {
-            listValue.add(element.getText());
+
+        if (elements != null) {
+            for (Element element : elements) {
+                listValue.add(element.getText());
+            }
+        } else {
+            throw new NullPointerException("\"" + name + "\" is not a list parameter");
         }
         return listValue;
     }
@@ -97,17 +110,21 @@ public final class Config {
      * @return parameter value as map
      */
     public static Map<String, String> getMapParam(String name, String attribute) {
-        List<Element> elements = configuration.getChild(name).getChildren();
+        List<Element> elements = getParam(name).getChildren();
         Map<String, String> mapValue = new HashMap<>();
 
-        for (Element element : elements) {
-            String tmp = element.getAttributeValue(attribute);
-            if (tmp != null) {
-                String[] extensions = tmp.split(",");
-                for (String extension : extensions) {
-                    mapValue.put(extension, element.getValue());
+        if (elements != null) {
+            for (Element element : elements) {
+                String tmp = element.getAttributeValue(attribute);
+                if (tmp != null) {
+                    String[] extensions = tmp.split(",");
+                    for (String extension : extensions) {
+                        mapValue.put(extension, element.getValue());
+                    }
                 }
             }
+        } else {
+            throw new NullPointerException("\"" + name + "\" is not a map parameter");
         }
         return mapValue;
     }

@@ -1,5 +1,6 @@
 package khaniukov.server;
 
+import khaniukov.server.AccessControl.AccessControl;
 import khaniukov.server.Http.Request;
 import khaniukov.server.Http.Response;
 import khaniukov.server.controller.ServerController;
@@ -23,41 +24,47 @@ public class WebServer implements Runnable {
      * Enumeration which consist of all supported methods
      */
     public enum HttpMethods { GET, OPTIONS, POST, UNKNOWN }
+    public static String ACTION_UPDATE = "update";
 
     private Socket           client  = null;
     private BufferedReader   in      = null;
     private DataOutputStream out     = null;
     private Request request;
-    private ServerController controller;
     private ArrayList<ActionListener> listeners = new ArrayList<>();
-    public static String ACTION_UPDATE = "update";
 
+    /**
+     * Constructs WebServer
+     *
+     * @param client Client socket
+     * @param controller Main application controller
+     * @throws IOException
+     */
+    public WebServer(Socket client, ServerController controller) throws IOException {
+        addActionListener(controller);
+        this.client = client;
+        this.in     = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        this.out    = new DataOutputStream(client.getOutputStream());
+    }
+
+    /**
+     * Add action listener
+     *
+     * @param listener Action listener
+     */
     public void addActionListener(ActionListener listener) {
         listeners.add(listener);
     }
 
-    public void removeActionListener(ActionListener listener) {
-        listeners.remove(listener);
-    }
-
+    /**
+     * Fire action to action listener
+     *
+     * @param command Action command
+     */
     protected void fireAction(String command) {
         ActionEvent event = new ActionEvent(this, 0, command);
         for (ActionListener listener : listeners) {
             listener.actionPerformed(event);
         }
-    }
-
-    /**
-     * Main class constructor
-     *
-     * @param client Client socket
-     * @throws IOException
-     */
-    public WebServer(Socket client, ServerController controller) throws IOException {
-        this.client = client;
-        addActionListener(controller);
-        this.in     = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        this.out    = new DataOutputStream(client.getOutputStream());
     }
 
     /**
@@ -77,7 +84,6 @@ public class WebServer implements Runnable {
             httpQueryHandler(in, out);
         } catch (IOException e) {
             Utils.logStackTrace(e);
-            System.exit(-1);
         } finally {
             try {
                 out.close();
@@ -85,12 +91,26 @@ public class WebServer implements Runnable {
                 client.close();
             } catch (IOException e) {
                 Utils.logStackTrace(e);
-                System.exit(-1);
             }
         }
     }
 
+    /**
+     * Send file to output
+     * @param path Path to file
+     * @param output DataOutputStream for sending file
+     * @throws IOException
+     */
     private void sendFile(String path, DataOutputStream output) throws IOException {
+        try {
+            if (!AccessControl.checkAccess(client, new File(path))) {
+                output.write(new Response(403).toByteArray());
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String extension = Utils.getFileExtension(path);
         Map<String, String> handlers = Config.getMapParam("Handlers", "ext");
         Map<String, String> types    = Config.getMapParam("ContentTypes", "ext");
@@ -101,43 +121,55 @@ public class WebServer implements Runnable {
             ExternalProgramRunner cgi = new ExternalProgramRunner(handlerCommand, new File(path));
             try {
                 output.write(
-                    new Response(200).setBody(cgi.setEnvironmentVariable("REMOTE_ADDR", request.getRemoteAddress())
-                                                     .setEnvironmentVariable("REMOTE_PORT", request.getRemotePort())
-                                                     .run(request.getMethod(), request.getQueryString()),
-                                                  contentType, true)
-                                         .toByteArray()
+                    new Response(200)
+                        .setBody(cgi
+                                     .setEnvironmentVariable("REMOTE_ADDR", request.getRemoteAddress())
+                                     .setEnvironmentVariable("REMOTE_PORT", request.getRemotePort())
+                                     .run(request.getMethod(), request.getQueryString()),
+                                contentType,
+                                true)
+                        .toByteArray()
                 );
             } catch (Exception e) {
                 Utils.logStackTrace(e);
-                System.exit(-1);
             }
         } else {
             try {
                 output.write(
-                        new Response(200).setBody(Files.readAllBytes(Paths.get(path)), contentType, false)
-                                .toByteArray()
+                    new Response(200)
+                        .setBody(Files.readAllBytes(Paths.get(path)), contentType, false)
+                        .toByteArray()
                 );
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * Processes the request
+     *
+     * @param input Data source
+     * @param output Data destination
+     * @throws IOException
+     */
     private void httpQueryHandler(BufferedReader input, DataOutputStream output) throws IOException {
-        String[] clientInfo = client.getRemoteSocketAddress()
-                .toString()
-                .substring(1)
-                .split(":");
+        String[] clientInfo = client
+                                  .getRemoteSocketAddress()
+                                  .toString()
+                                  .substring(1)
+                                  .split(":");
 
         request = new Request(input);
-        request.setRemoteAddress(clientInfo[0])
-               .setRemotePort(clientInfo[1]);
+        request
+            .setRemoteAddress(clientInfo[0])
+            .setRemotePort(clientInfo[1]);
 
         String path;
         File requestedFile;
 
-        if (request.getMethod() == HttpMethods.GET || request.getMethod() == HttpMethods.POST) {
+        if (request.getMethod() == HttpMethods.GET ||
+            request.getMethod() == HttpMethods.POST) {
             path = request.process();
             fireAction(ACTION_UPDATE);
             requestedFile = new File(Config.getStringParam("WebDocRoot") + path);
@@ -170,8 +202,8 @@ public class WebServer implements Runnable {
         } else if (request.getMethod() == HttpMethods.OPTIONS) {
             output.write(
                     new Response(200)
-                            .setHeader("Allow", "POST,GET,OPTIONS")
-                            .toByteArray()
+                        .setHeader("Allow", "POST,GET,OPTIONS")
+                        .toByteArray()
             );
         } else if (request.getMethod() == HttpMethods.UNKNOWN) {
             output.write(new Response(405).toByteArray());

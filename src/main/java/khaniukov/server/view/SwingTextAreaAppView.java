@@ -11,6 +11,7 @@ public class SwingTextAreaAppView extends SwingAppView {
 
     public static final String FRAME_TITLE        = "RostWebServer";
     private JTextArea area;
+    private JScrollPane sp;
     private MenuItem closeItem = new MenuItem("Close");
     private MenuItem openItem  = new MenuItem("Open");
 
@@ -47,8 +48,9 @@ public class SwingTextAreaAppView extends SwingAppView {
         area = new JTextArea();
         area.setEditable(false);
         // Scroll Pane on TextArea
-        JScrollPane sp = new JScrollPane(area);
+        sp = new JScrollPane(area);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        sp.getVerticalScrollBar().addAdjustmentListener((e) -> e.getAdjustable().setValue(e.getAdjustable().getMaximum()));
         frame.getContentPane().add(sp);
     }
 

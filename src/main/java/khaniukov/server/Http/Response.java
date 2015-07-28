@@ -20,7 +20,13 @@ import java.util.Map;
  * @author Rostislav Khaniukov
  */
 public class Response {
+    /**
+     * End of line
+     */
     private static final String EOLN   = "\r\n";
+    /**
+     * Mapping answer codes and texts
+     */
     private static final Map<Integer, String> returnText = new HashMap<Integer, String>() {{
         put(200, "200 OK");
         put(400, "400 Bad Request");
@@ -37,17 +43,16 @@ public class Response {
     private byte[]  body;
     private boolean fromCGI;
 
+    /**
+     * Construct HTTP Response
+     *
+     * @param returnCode HTTP return code
+     */
     public Response(int returnCode) {
         headers = new LinkedHashMap<>();
         stateText = returnText.get(returnCode);
-        if (returnCode == 404) {
-            try {
-                URL url = this.getClass().getResource("/default_pages/404.html");
-                if (url == null) throw new NoSuchFileException("Cannot find /default_pages/404.html");
-                this.body = Files.readAllBytes(Paths.get(url.toURI()));
-            } catch (Exception e) {
-                Utils.logStackTrace(e);
-            }
+        if (returnCode == 404 || returnCode == 403) {
+            this.body = Utils.readDefaultPage(returnCode);
         }
     }
 
