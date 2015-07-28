@@ -29,7 +29,7 @@ public class ExternalProgramRunner {
         } catch (IOException e) {
             Utils.logStackTrace(e);
         }
-
+        tmp.delete();
         pb = new ProcessBuilder(pathToProgram, file.getAbsolutePath());
         pb.redirectOutput(tmp);
     }
