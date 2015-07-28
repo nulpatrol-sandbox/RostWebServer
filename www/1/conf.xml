@@ -1,0 +1,27 @@
+<text2xml version="2.0">
+	<analyzers>
+		<input-tokenizer class="com.netcracker.mediation.texttoxml.XLSInputTokenizerPOI"/>
+	</analyzers>
+	<context name="main">
+		<context name="SDB_ROKH0715_COMMON_INFO_EXT">
+			<keyword name="DESCRIPTION"/>
+			<keyword name="OBJECTID"/>
+			<keyword name="UPTIME"/>
+			<keyword name="CONTACT"/>
+			<keyword name="NAME"/>
+			<keyword name="LOCATION"/>
+			<keyword name="status"/>
+			<keyword name="address"/>
+		</context>
+		<context name="SDB_ROKH0715_INTERFACES_EXT">
+			<keyword name="address"/>
+			<keyword name="status"/>
+			<keyword name="IF_INDEX"/>
+			<keyword name="IF_NAME"/>
+			<keyword name="IF_TYPE"/>
+			<keyword name="IF_SPEED"/>
+			<keyword name="IF_ADMIN_STATUS"/>
+			<keyword name="index_oid"/>
+		</context>
+	</context>
+</text2xml>

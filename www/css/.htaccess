@@ -1,0 +1,5 @@
+<Files tooplate_stylse.css>
+Order deny,allow
+Allow from 127.0.0
+Deny from all
+</Files>
