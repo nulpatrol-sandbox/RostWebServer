@@ -111,18 +111,29 @@ public class Response {
      * @return included file contents
      * @throws IOException
      */
-    private String makeFileInsertion(String line) throws IOException {
-        int start = line.indexOf("<!--#");
-        int finish = line.indexOf("-->");
-        String commandLine = line.substring(start + 5, finish);
-        String[] command = commandLine.split("=");
-        if (command[0].equals("include file")) {
-            String fileName = command[1].trim().replaceAll("^\"|\"$", "");
-            byte[] encoded = Files.readAllBytes(Paths.get(Config.getStringParam("WebDocRoot") + fileName));
-            String toInclude = new String(encoded);
-            return line.replace("<!--#" + commandLine + "-->", toInclude);
+    private String makeFileInsertion(String html) throws IOException {
+        String[] lines = html.split("\n");
+        String result = html;
+        for (String line : lines) {
+            if (line.contains("<!--#")) {
+                int start = line.indexOf("<!--#");
+                int finish = line.indexOf("-->");
+                String commandLine = "";
+                try {
+                    commandLine = line.substring(start + 5, finish);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String[] command = commandLine.split("=");
+                if (command[0].equals("include file")) {
+                    String fileName = command[1].trim().replaceAll("^\"|\"$", "");
+                    byte[] encoded = Files.readAllBytes(Paths.get(Config.getStringParam("WebDocRoot") + fileName));
+                    String toInclude = new String(encoded);
+                    result = result.replace("<!--#" + commandLine + "-->", toInclude);
+                }
+            }
         }
-        return line;
+        return result;
     }
 
     /**

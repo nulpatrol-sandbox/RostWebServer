@@ -51,6 +51,7 @@ public class SwingTextAreaAppView extends SwingAppView {
         sp = new JScrollPane(area);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         sp.getVerticalScrollBar().addAdjustmentListener((e) -> e.getAdjustable().setValue(e.getAdjustable().getMaximum()));
+
         frame.getContentPane().add(sp);
     }
 

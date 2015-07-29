@@ -47,9 +47,11 @@ $(function() {
     
 		<div id="home" class="content_top"></div>
     	<div class="content_box">
-        	<div class="content_title content_ct"><h2>Welcome to Blue Spark Theme</h2></div>
+        	<div class="content_title content_ct">
+				<h2>Welcome to Blue Spark Theme</h2>
+			</div>
             <div class="content">
-            	
+            <!--#include file="file.inc" -->	
 				<form method="POST" action="http://127.0.0.1"> 
 					<input name="name" type="text" />
 					<input type="submit" />
